@@ -1,0 +1,56 @@
+# Files to ignore when deploying to Google Cloud
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+.next/
+.nuxt/
+out/
+
+# Documentation
+README.md
+CONTRIBUTING.md
+LICENSE
+*.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.circleci/
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+deploy-gcr.sh
+GCR_DEPLOYMENT.md
+
+# Testing
+.test
+.spec
+__tests__/
+test/
