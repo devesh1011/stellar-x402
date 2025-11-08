@@ -8,6 +8,18 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Polyfill for global object before any modules load
+      if (typeof globalThis === "undefined") {
+        window.globalThis = window;
+      }
+      if (typeof global === "undefined") {
+        window.global = window;
+      }
+      if (typeof Buffer === "undefined") {
+        window.Buffer = {};
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

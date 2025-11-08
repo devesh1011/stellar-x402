@@ -1,86 +1,76 @@
 import { useState, useEffect } from "react";
 import { Keypair } from "@stellar/stellar-sdk";
+import {
+  StellarWalletsKit,
+  WalletNetwork,
+} from "@creit.tech/stellar-wallets-kit";
+import * as StellarWalletsModules from "@creit.tech/stellar-wallets-kit";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 
 interface WalletSelectorProps {
-  onWalletSelected: (keypair: Keypair) => void;
-  selectedKeypair?: Keypair | null;
+  onWalletSelected: (address: string) => void;
+  selectedAddress?: string | null;
 }
 
 export function WalletSelector({
   onWalletSelected,
-  selectedKeypair,
+  selectedAddress,
 }: WalletSelectorProps) {
   const [isConnecting, setIsConnecting] = useState(false);
-  const [freighterAvailable, setFreighterAvailable] = useState(false);
+  const [walletKit, setWalletKit] = useState<StellarWalletsKit | null>(null);
 
   // Demo keypair - using fixed secret for consistent address across sessions
   const DEMO_KEYPAIR = Keypair.fromSecret(
     "SBJXNSKXWNFYZWB2XYIWEYXZGYSH6VCEVLDY42I6ZIO5ZJUQEXY33LGM",
   );
 
-  // Check if Freighter is available on mount
+  // Initialize Stellar Wallets Kit on mount
   useEffect(() => {
-    const checkFreighter = () => {
-      // Freighter can be exposed in different ways
-      const freighterApi = (window as unknown as { __freighterApi__?: unknown })
-        .__freighterApi__;
-      const freighterExtension = (window as unknown as { freighter?: unknown })
-        .freighter;
-      const isBrowserExtensionAvailable =
-        !!freighterApi || !!freighterExtension;
+    const initKit = async () => {
+      try {
+        const modules = [
+          new StellarWalletsModules.FreighterModule(),
+          new StellarWalletsModules.xBullModule(),
+          new StellarWalletsModules.AlbedoModule(),
+          new StellarWalletsModules.RabetModule(),
+          new StellarWalletsModules.LobstrModule(),
+          new StellarWalletsModules.HanaModule(),
+          new StellarWalletsModules.HotWalletModule(),
+          new StellarWalletsModules.KleverModule(),
+        ];
 
-      setFreighterAvailable(isBrowserExtensionAvailable);
+        const kit = new StellarWalletsKit({
+          selectedWalletId: "freighter",
+          modules,
+          network: WalletNetwork.TESTNET,
+        });
 
-      console.log("Freighter detection:", {
-        freighterApi: !!freighterApi,
-        freighterExtension: !!freighterExtension,
-        available: isBrowserExtensionAvailable,
-      });
+        setWalletKit(kit);
+        console.log("Stellar Wallets Kit initialized successfully");
+      } catch (error) {
+        console.error("Failed to initialize Stellar Wallets Kit:", error);
+      }
     };
 
-    // Check immediately and also after a short delay for slow extensions
-    checkFreighter();
-    const timeout = setTimeout(checkFreighter, 500);
-
-    return () => clearTimeout(timeout);
+    initKit();
   }, []);
 
-  const connectFreighter = async () => {
+  const connectWallet = async () => {
+    if (!walletKit) {
+      alert("Wallet kit not initialized");
+      return;
+    }
+
     setIsConnecting(true);
     try {
-      // Try both ways Freighter can be exposed
-      let freighter = (window as unknown as { __freighterApi__?: unknown })
-        .__freighterApi__;
-
-      if (!freighter) {
-        freighter = (window as unknown as { freighter?: unknown }).freighter;
-      }
-
-      if (!freighter) {
-        alert(
-          "Freighter wallet not detected. Please install it from https://www.freighter.app",
-        );
-        setIsConnecting(false);
-        return;
-      }
-
-      // Use the Freighter API to get the public key
-      const freighterTyped = freighter as {
-        getPublicKey: () => Promise<string>;
-      };
-      const publicKey = await freighterTyped.getPublicKey();
-
-      console.log("Connected to Freighter:", publicKey);
-      alert(`Connected to Freighter wallet: ${publicKey.substring(0, 10)}...`);
-
-      // For now, use demo keypair (in production, implement proper signing with Freighter)
-      onWalletSelected(DEMO_KEYPAIR);
+      const { address: walletAddress } = await walletKit.getAddress();
+      onWalletSelected(walletAddress);
+      console.log("Connected to wallet:", walletAddress);
     } catch (error) {
-      console.error("Error connecting to Freighter:", error);
+      console.error("Error connecting to wallet:", error);
       alert(
-        `Failed to connect to Freighter wallet: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to connect wallet: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     } finally {
       setIsConnecting(false);
@@ -88,10 +78,8 @@ export function WalletSelector({
   };
 
   const useDemoWallet = () => {
-    onWalletSelected(DEMO_KEYPAIR);
+    onWalletSelected(DEMO_KEYPAIR.publicKey());
   };
-
-  const publicKey = selectedKeypair?.publicKey() || null;
 
   return (
     <Card className="p-4 space-y-4">
@@ -102,36 +90,27 @@ export function WalletSelector({
         </p>
       </div>
 
-      {publicKey && (
+      {selectedAddress && (
         <div className="bg-blue-50 border border-blue-200 rounded p-3">
-          <p className="text-sm font-mono text-blue-900">{publicKey}</p>
+          <p className="text-sm font-mono text-blue-900">{selectedAddress}</p>
           <p className="text-xs text-blue-700 mt-1">✓ Wallet connected</p>
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <Button
-          onClick={connectFreighter}
-          disabled={isConnecting || !freighterAvailable}
+          onClick={connectWallet}
+          disabled={isConnecting || !walletKit}
           variant="outline"
           className="w-full"
-          title={
-            freighterAvailable
-              ? "Connect to Freighter wallet"
-              : "Freighter wallet not detected"
-          }
         >
-          {isConnecting
-            ? "Connecting..."
-            : !freighterAvailable
-              ? "🔍 Freighter Not Found"
-              : "🦊 Freighter Wallet"}
+          {isConnecting ? "Connecting..." : "🦊 Connect Wallet"}
         </Button>
 
         <Button
           onClick={useDemoWallet}
           variant={
-            publicKey === DEMO_KEYPAIR.publicKey() ? "default" : "outline"
+            selectedAddress === DEMO_KEYPAIR.publicKey() ? "default" : "outline"
           }
           className="w-full"
         >
@@ -140,7 +119,8 @@ export function WalletSelector({
       </div>
 
       <p className="text-xs text-gray-500 text-center">
-        Demo wallet: {DEMO_KEYPAIR.publicKey().substring(0, 10)}...
+        Supports: Freighter, xBull, Albedo, Rabet, Lobstr, Hana, Hot Wallet,
+        Klever
       </p>
     </Card>
   );
