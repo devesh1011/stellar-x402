@@ -197,7 +197,7 @@ X-Settlement-Time: 1234
 
 ```
 PAYMENT_RECIPIENT_ADDRESS=0xYOUR_ADDRESS
-FACILITATOR_URL=https://facilitator.example.com/api/facilitator
+FACILITATOR_URL=https://facilitator-109839474381.us-central1.run.app
 ```
 
 ### Optional
@@ -209,7 +209,7 @@ None.
 For development and quick testing, you can point your middleware to the public demo facilitator:
 
 ```
-FACILITATOR_URL=https://stellar-x402.vercel.app/api/facilitator
+FACILITATOR_URL=https://facilitator-109839474381.us-central1.run.app
 ```
 
 Note: This shared service is for demos only. Don’t use it for production.

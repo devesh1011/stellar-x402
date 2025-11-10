@@ -38,7 +38,7 @@ Create `.env` in your project root:
 
 ```
 PAYMENT_RECIPIENT_ADDRESS=GABCD...WXYZ
-FACILITATOR_URL=http://localhost:3001
+FACILITATOR_URL=https://facilitator-109839474381.us-central1.run.app
 ```
 
 | Variable                    | Description                                     |
