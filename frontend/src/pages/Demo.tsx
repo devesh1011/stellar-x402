@@ -82,7 +82,7 @@ export default function Demo() {
     try {
       // First request without payment header
       const res = await fetch(
-        "http://server-109839474381.us-central1.run.app/api/protected/data"
+        "https://server-109839474381.us-central1.run.app/api/protected/data"
       );
 
       if (res.status === 402) {
@@ -192,7 +192,7 @@ export default function Demo() {
 
       // Step 6: Send request with X-PAYMENT header containing the encoded payment
       const res = await fetch(
-        "http://server-109839474381.us-central1.run.app/api/protected/data",
+        "https://server-109839474381.us-central1.run.app/api/protected/data",
         {
           method: "GET",
           headers: {
