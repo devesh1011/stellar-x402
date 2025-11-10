@@ -34,7 +34,7 @@ export default function Demo() {
   const [x402Requirement, setX402Requirement] =
     useState<X402Requirement | null>(null);
   const [step, setStep] = useState<"initial" | "payment_required" | "success">(
-    "initial",
+    "initial"
   );
   const [walletKit, setWalletKit] = useState<StellarWalletsKit | null>(null);
   const [mode, setMode] = useState<"human" | "ai">("human");
@@ -81,7 +81,9 @@ export default function Demo() {
 
     try {
       // First request without payment header
-      const res = await fetch("http://localhost:3000/api/protected/data");
+      const res = await fetch(
+        "http://server-109839474381.us-central1.run.app/api/protected/data"
+      );
 
       if (res.status === 402) {
         // Handle 402 Payment Required
@@ -93,7 +95,7 @@ export default function Demo() {
           setX402Requirement(requirement);
           setStep("payment_required");
           setError(
-            `Payment Required: ${requirement.maxAmountRequired} stroops to ${requirement.payTo}`,
+            `Payment Required: ${requirement.maxAmountRequired} stroops to ${requirement.payTo}`
           );
         } else {
           throw new Error("No payment requirements provided");
@@ -108,7 +110,7 @@ export default function Demo() {
       }
     } catch (err) {
       setError(
-        `Error: ${err instanceof Error ? err.message : "Unknown error"}`,
+        `Error: ${err instanceof Error ? err.message : "Unknown error"}`
       );
       setStep("initial");
     } finally {
@@ -153,7 +155,7 @@ export default function Demo() {
           stellarConfig: {
             rpcUrl: "https://soroban-testnet.stellar.org",
           },
-        },
+        }
       );
 
       console.log("Unsigned payload:", unsignedPayload);
@@ -189,12 +191,15 @@ export default function Demo() {
       console.log("Encoded payment:", encodedPayment);
 
       // Step 6: Send request with X-PAYMENT header containing the encoded payment
-      const res = await fetch("http://localhost:3000/api/protected/data", {
-        method: "GET",
-        headers: {
-          "X-PAYMENT": encodedPayment,
-        },
-      });
+      const res = await fetch(
+        "http://server-109839474381.us-central1.run.app/api/protected/data",
+        {
+          method: "GET",
+          headers: {
+            "X-PAYMENT": encodedPayment,
+          },
+        }
+      );
 
       if (!res.ok) {
         const errorData = await res.text();
@@ -207,7 +212,7 @@ export default function Demo() {
       setX402Requirement(null);
     } catch (err) {
       setError(
-        `Error: ${err instanceof Error ? err.message : "Unknown error"}`,
+        `Error: ${err instanceof Error ? err.message : "Unknown error"}`
       );
     } finally {
       setLoading(false);
