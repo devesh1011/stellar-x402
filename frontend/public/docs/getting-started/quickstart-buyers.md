@@ -39,7 +39,7 @@ import { wrapFetchWithPayment } from "stellar-x402";
 const response = await wrapFetchWithPayment.get(
   "https://api.example.com/premium/weather",
   {
-    keypair: process.env.APTOS_PRIVATE_KEY,
+    keypair: process.env.STELLAR_PRIVATE_KEY,
   },
 );
 
@@ -98,7 +98,7 @@ console.log("Private Key:", keypair.secret().toString());
 const response = await wrapFetchWithPayment.get(
   "https://api.example.com/data",
   {
-    keypair: process.env.APTOS_PRIVATE_KEY,
+    keypair: process.env.STELLAR_PRIVATE_KEY,
     params: { city: "SF", units: "metric" },
   },
 );
@@ -110,7 +110,7 @@ const response = await wrapFetchWithPayment.get(
 const analysis = await wrapFetchWithPayment.post(
   "https://api.example.com/analyze",
   { text: "Content to analyze", lang: "en" },
-  { keypair: process.env.APTOS_PRIVATE_KEY },
+  { keypair: process.env.STELLAR_PRIVATE_KEY },
 );
 ```
 
@@ -120,7 +120,7 @@ const analysis = await wrapFetchWithPayment.post(
 const response = await wrapFetchWithPayment.get(
   "https://api.example.com/data",
   {
-    keypair: process.env.APTOS_PRIVATE_KEY,
+    keypair: process.env.STELLAR_PRIVATE_KEY,
     headers: {
       "X-Client-Version": "1.0.0",
       Authorization: "Bearer token",
@@ -149,7 +149,7 @@ import { wrapFetchWithPayment } from "stellar-x402";
 const api = wrapFetchWithPayment.create({
   baseURL: "https://api.example.com",
   timeout: 10000,
-  keypair: process.env.APTOS_PRIVATE_KEY,
+  keypair: process.env.STELLAR_PRIVATE_KEY,
   headers: {
     "X-Client-ID": "my-app",
   },
@@ -168,7 +168,7 @@ Alternative to private key strings:
 import { Keypair, Ed25519PrivateKey } from "@stellar/stellar-sdk";
 import { wrapFetchWithPayment } from "stellar-x402";
 
-const privateKey = new Ed25519PrivateKey(process.env.APTOS_PRIVATE_KEY!);
+const privateKey = new Ed25519PrivateKey(process.env.STELLAR_PRIVATE_KEY!);
 const account = Keypair.fromPrivateKey({ privateKey });
 
 const response = await wrapFetchWithPayment.get(
@@ -187,7 +187,7 @@ Access payment details from the response:
 const response = await wrapFetchWithPayment.get(
   "https://api.example.com/data",
   {
-    keypair: process.env.APTOS_PRIVATE_KEY,
+    keypair: process.env.STELLAR_PRIVATE_KEY,
   },
 );
 
@@ -211,7 +211,7 @@ try {
   const response = await wrapFetchWithPayment.get(
     "https://api.example.com/premium/data",
     {
-      keypair: process.env.APTOS_PRIVATE_KEY,
+      keypair: process.env.STELLAR_PRIVATE_KEY,
     },
   );
 
@@ -245,7 +245,7 @@ Automatically uses correct network based on 402 response:
 
 ```typescript
 // No network configuration needed!
-// Detects stellar-testnet, aptos-mainnet, or aptos-devnet automatically
+// Detects stellar-testnet, STELLAR-mainnet, or STELLAR-devnet automatically
 const response = await wrapFetchWithPayment.get(url, { privateKey });
 ```
 
@@ -256,13 +256,13 @@ Handles both seamlessly:
 ```typescript
 // Free endpoint - no payment made
 const free = await wrapFetchWithPayment.get("https://api.example.com/free", {
-  keypair: process.env.APTOS_PRIVATE_KEY,
+  keypair: process.env.STELLAR_PRIVATE_KEY,
 });
 console.log(free.paymentInfo); // undefined
 
 // Paid endpoint - automatic payment
 const paid = await wrapFetchWithPayment.get("https://api.example.com/premium", {
-  keypair: process.env.APTOS_PRIVATE_KEY,
+  keypair: process.env.STELLAR_PRIVATE_KEY,
 });
 console.log(paid.paymentInfo); // { transactionHash, amount, ... }
 ```
@@ -274,8 +274,8 @@ console.log(paid.paymentInfo); // { transactionHash, amount, ... }
 ```typescript
 import { Stellar, StellarConfig, Network } from "@stellar/stellar-sdk";
 
-const aptos = new Stellar(new StellarConfig({ network: Network.TESTNET }));
-const balance = await aptos.getKeypairAPTAmount({ accountAddress: address });
+const STELLAR = new Stellar(new StellarConfig({ network: Network.TESTNET }));
+const balance = await STELLAR.getKeypairAPTAmount({ accountAddress: address });
 
 if (balance < 1000000) {
   // Less than 0.01 APT
@@ -307,7 +307,7 @@ async function callWithRetry(url, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await wrapFetchWithPayment.get(url, {
-        keypair: process.env.APTOS_PRIVATE_KEY,
+        keypair: process.env.STELLAR_PRIVATE_KEY,
       });
     } catch (error) {
       if (i === maxRetries - 1) throw error;

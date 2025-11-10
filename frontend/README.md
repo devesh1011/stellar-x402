@@ -40,7 +40,7 @@ The React Compiler is not enabled on this template because of its impact on dev 
 
 - Back to top button      // Other configs...
 
-- All aptos-x402 docs ported and adapted for Stellar
+- All STELLAR-x402 docs ported and adapted for Stellar
 
       // Remove tseslint.configs.recommended and replace with this
 
