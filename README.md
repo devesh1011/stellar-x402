@@ -244,7 +244,7 @@ Create `.env` in your project root:
 
 ```env
 PAYMENT_RECIPIENT_ADDRESS=GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5
-FACILITATOR_URL=https://facilitator.example.com
+FACILITATOR_URL=https://facilitator-109839474381.us-central1.run.app
 ```
 
 > **Getting a Wallet Address:**  
